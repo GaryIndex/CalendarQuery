@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation files('libs/tyme4j-1.2.0.jar')
+}
+
+task buildJar(type: Jar) {
+    from sourceSets.main.output
+    archiveFileName = 'your-project.jar'
+    destinationDirectory = file("${buildDir}/libs")
+}
