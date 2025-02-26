@@ -18,32 +18,39 @@ jobs:
 
     steps:
     - name: Check out the repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2  # 检出代码库
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2  # 设置 JDK 11
       with:
         java-version: '11'
-        distribution: 'adoptopenjdk'  # 指定 JDK 发行版
+        distribution: 'adoptium'  # 使用 Adoptium JDK
 
     - name: Install dependencies and build project
       run: |
         echo "Installing dependencies..."
+
         # 安装 Gradle
         wget https://services.gradle.org/distributions/gradle-7.4-bin.zip -P /tmp
         unzip -d /opt/gradle /tmp/gradle-7.4-bin.zip
         export PATH=$PATH:/opt/gradle/gradle-7.4/bin
         gradle -v  # 检查 Gradle 版本
 
-        # 编译和构建项目
+        # 编译并构建项目（这里假设你有一个 Gradle 项目）
         echo "Building project with Gradle..."
         gradle clean build
+
+    - name: Install Tyme4j JAR (libs/tyme4j-1.2.0.jar)
+      run: |
+        echo "Installing Tyme4j JAR..."
+        # 如果你需要手动复制 JAR 文件到项目目录，使用如下命令：
+        cp libs/tyme4j-1.2.0.jar build/libs/  # 将 JAR 文件复制到构建目录
 
     - name: Run the application (Optional)
       run: |
         echo "Running the project..."
         # 运行你的应用程序，假设有一个 Main 类
-        java -cp build/libs/your-project.jar com.yourpackage.YourMainClass
+        java -cp build/libs/your-project.jar:libs/tyme4j-1.2.0.jar com.yourpackage.YourMainClass
 
     - name: Deploy to selected environment
       run: |
