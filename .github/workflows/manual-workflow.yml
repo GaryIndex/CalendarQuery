@@ -1,0 +1,56 @@
+name: Manual Workflow to Install and Use Tyme4j
+
+on:
+  workflow_dispatch:  # 手动触发
+    inputs:
+      environment:
+        description: 'Choose deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 运行环境
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+
+    - name: Install dependencies and build project
+      run: |
+        echo "Installing dependencies..."
+        # 安装 Gradle
+        wget https://services.gradle.org/distributions/gradle-7.4-bin.zip -P /tmp
+        unzip -d /opt/gradle /tmp/gradle-7.4-bin.zip
+        export PATH=$PATH:/opt/gradle/gradle-7.4/bin
+        gradle -v  # 检查 Gradle 版本
+
+        # 编译和构建项目
+        echo "Building project with Gradle..."
+        gradle clean build
+
+    - name: Run the application (Optional)
+      run: |
+        echo "Running the project..."
+        # 运行你的应用程序，假设有一个 Main 类
+        java -cp build/libs/your-project.jar com.yourpackage.YourMainClass
+
+    - name: Deploy to selected environment
+      run: |
+        echo "Deploying to ${{ github.event.inputs.environment }} environment"
+        if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+          echo "Deploying to staging..."
+          # 在这里添加部署到 staging 环境的命令
+        else
+          echo "Deploying to production..."
+          # 在这里添加部署到 production 环境的命令
+        fi
